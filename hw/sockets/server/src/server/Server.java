@@ -56,9 +56,11 @@ public class Server {
 
         System.out.println(broadcastMessage);
 
-        for (ClientHandler client : clients) {
-            if (client != sender) {
-                client.sendMessage(broadcastMessage);
+        synchronized {
+            for (ClientHandler client : clients) {
+                if (client != sender) {
+                    client.sendMessage(broadcastMessage);
+                }
             }
         }
     }
@@ -70,8 +72,10 @@ public class Server {
 
         System.out.println(serverMessage);
 
-        for (ClientHandler client : clients) {
-            client.sendMessage(serverMessage);
+        synchronized {
+            for (ClientHandler client : clients) {
+                client.sendMessage(serverMessage);
+            }
         }
     }
 
@@ -82,7 +86,13 @@ public class Server {
     }
 
     public Boolean checkNickname(String nickname) {
-        return clients.stream().anyMatch(client -> client.getNickname() != null && client.getNickname().equals(nickname));
+        Boolean returnValue;
+        
+        synchronized {
+            returnValue = clients.stream().anyMatch(client -> client.getNickname() != null && client.getNickname().equals(nickname));
+        }
+
+        return returnValue;
     }
 
     private void stopServer() {
