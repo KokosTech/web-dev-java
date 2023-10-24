@@ -61,6 +61,8 @@ public class DialUpMenu {
                         System.out.println("Something went wrong. Please try again later.");
                         System.out.println(e.getMessage());
                     }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Invalid port number or host address. Please try again.");
                 }
             } else {
                 System.out.println("Invalid command. Please try again.");
