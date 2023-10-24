@@ -1,4 +1,8 @@
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class DialUpMenu {
@@ -12,11 +16,11 @@ public class DialUpMenu {
     }
 
     public static void start() {
+        Scanner scanner = new Scanner(System.in);
         printMenu();
 
         while (true) {
             System.out.print("> ");
-            Scanner scanner = new Scanner(System.in);
             String input = scanner.nextLine();
 
             if (input.equals("/quit")) {
@@ -41,9 +45,23 @@ public class DialUpMenu {
                 int port = Integer.parseInt(address[1]);
 
 
-                Client client = new Client(host, port);
-                client.start();
-                break;
+                Client client = new Client(host, port, scanner);
+                try {
+                    client.start();
+                } catch (IOException e) {
+                    if (e instanceof ConnectException) {
+                        System.out.println("Unable to connect to server. Please try again later.");
+                    } else if (e instanceof UnknownHostException) {
+                        System.out.println("Unable to connect to server. Unknown host.");
+                    } else if (e instanceof NoRouteToHostException) {
+                        System.out.println("Unable to connect to server. No route to host.");
+                    } else if (e instanceof SocketException) {
+                        System.out.println("Unable to connect to server. Socket exception.");
+                    } else {
+                        System.out.println("Something went wrong. Please try again later.");
+                        System.out.println(e.getMessage());
+                    }
+                }
             } else {
                 System.out.println("Invalid command. Please try again.");
             }
